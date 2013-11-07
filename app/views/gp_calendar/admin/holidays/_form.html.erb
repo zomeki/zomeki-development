@@ -1,0 +1,33 @@
+<span class="note">※は必須項目です。</span>
+
+<table class="show">
+  <tr>
+    <th><%= f.label :state %></th>
+    <td><%= f.radio_buttons :state, @item.class::STATE_OPTIONS, class: 'status' %></td>
+  </tr>
+  <tr>
+    <th><%= f.label :title %> <span class="note">※</span></th>
+    <td><%= f.text_field :title %></td>
+  </tr>
+  <tr>
+    <th><%= f.label :date %></th>
+    <td><%= f.text_field :date, value: value_for_datepicker(f.object_name, :started_on), style: 'width: 150px;', :class => 'datepicker' %></td>
+  </tr>
+  <tr>
+    <th><%= f.label :description %></th>
+    <td><%= f.text_field :description, style: 'width: 700px;' %></td>
+  </tr>
+  <tr>
+    <th><%= f.label :kind %></th>
+    <td><%= f.radio_buttons :kind, @item.class::KIND_OPTIONS %></td>
+  </tr>
+</table>
+
+<%= creator_form f %>
+
+<%= javascript_tag do %>
+$(document).ready(function () {
+  <%= enable_datepicker_script %>
+  $('.datepicker').datepicker('option', 'dateFormat', 'mm月dd日');
+});
+<% end %>
