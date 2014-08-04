@@ -10,6 +10,7 @@ class Sys::Lib::File::NoUploadedFile
       options = path
       @data = options[:data]
     when String
+      @path = path
       @data = ::File.read(path)
       @mime_type = MIME::Types.type_for(path)[0].to_s
 
@@ -23,6 +24,10 @@ class Sys::Lib::File::NoUploadedFile
     @size = @data.size if @data
 
     @image = validate_image unless not_image
+  end
+
+  def path
+    @path
   end
 
   def errors
