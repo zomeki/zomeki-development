@@ -21,6 +21,7 @@ module Rank::Controller::Rank
       copy = results.to_a
       if(repeat_times != 0)
         repeat_times.times do |x|
+          Garb::Session.access_token = content.access_token
           copy += google_analytics(profile, limit, (x+1)*limit + 1, start_date).to_a
         end
       end
