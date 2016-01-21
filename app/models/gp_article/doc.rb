@@ -485,7 +485,7 @@ class GpArticle::Doc < ActiveRecord::Base
       new_doc.in_maps = new_maps
     end
 
-    new_doc.save!
+    new_doc.save!(validate: false)
 
     files.each do |f|
       Sys::File.new(f.attributes).tap do |new_file|
