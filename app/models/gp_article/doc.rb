@@ -36,6 +36,7 @@ class GpArticle::Doc < ActiveRecord::Base
   scope :mobile, ->(m) { m ? where(terminal_mobile: true) : where(terminal_pc_or_smart_phone: true) }
   scope :none, -> { where("#{self.table_name}.id IS ?", nil).where("#{self.table_name}.id IS NOT ?", nil) }
   scope :display_published_after, ->(date) { where(arel_table[:display_published_at].gteq(date)) }
+  scope :display_updated_after, ->(date) { where(arel_table[:display_updated_at].gteq(date)) }
 
   # Content
   belongs_to :content, :foreign_key => :content_id, :class_name => 'GpArticle::Content::Doc'

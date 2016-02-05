@@ -20,6 +20,8 @@ class GpArticle::Content::Setting < Cms::ContentSetting
     comment: I18n.t('comments.date_style').html_safe
   set_config :time_style, name: "#{GpArticle::Doc.model_name.human}時間形式",
     comment: I18n.t('comments.time_style').html_safe
+  set_config :docs_order, name: "#{GpArticle::Doc.model_name.human}一覧表示順",
+    options: GpArticle::Content::Doc::DOCS_ORDER_OPTIONS
   set_config :feed, name: "フィード",
     options: GpArticle::Content::Doc::FEED_DISPLAY_OPTIONS,
     form_type: :radio_buttons
@@ -36,6 +38,9 @@ class GpArticle::Content::Setting < Cms::ContentSetting
     form_type: :check_boxes
   set_config :map_relation, name: 'マップ',
     options: GpArticle::Content::Doc::MAP_RELATION_OPTIONS,
+    form_type: :radio_buttons
+  set_config :rank_relation, name: 'アクセスランキング',
+    options: GpArticle::Content::Doc::RANK_RELATION_OPTIONS,
     form_type: :radio_buttons
   set_config :display_dates, name: '記事日付表示',
     options: [['公開日', 'published_at'], ['最終更新日', 'updated_at']],

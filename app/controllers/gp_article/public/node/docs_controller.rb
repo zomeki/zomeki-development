@@ -24,9 +24,37 @@ class GpArticle::Public::Node::DocsController < Cms::Controller::Public::Base
   end
 
   def index
-    @docs = public_or_preview_docs.order('display_published_at DESC, published_at DESC')
+    @docs = public_or_preview_docs
+    @docs = case @content.docs_order
+      when 'published_at_desc'
+        @docs.order('display_published_at DESC, published_at DESC')
+      when 'published_at_asc'
+        @docs.order('display_published_at ASC, published_at ASC')
+      when 'updated_at_desc'
+        @docs.order('display_updated_at DESC, updated_at DESC')
+      when 'updated_at_asc'
+        @docs.order('display_updated_at ASC, updated_at ASC')
+      when 'random'
+        @docs.order('RAND()')
+      else
+        @docs.order('display_published_at DESC, published_at DESC')
+      end
+    
+    order_type = if @content.docs_order =~ /^updated_at/
+                    'updated'
+                  else
+                    'published'
+                  end
+    
+    
     if params[:format].in?('rss', 'atom')
-      @docs = @docs.display_published_after(@content.feed_docs_period.to_i.days.ago) if @content.feed_docs_period.present?
+      if @content.feed_docs_period.present?
+        if order_type == 'updated'
+          @docs = @docs.display_updated_after(@content.feed_docs_period.to_i.days.ago)
+        else
+          @docs = @docs.display_published_after(@content.feed_docs_period.to_i.days.ago)
+        end
+      end
       @docs = @docs.reject{|d| d.will_be_replaced? } unless Core.publish
       @docs = @docs.paginate(page: params[:page], per_page: @content.feed_docs_number)
       return render_feed(@docs)
@@ -36,10 +64,18 @@ class GpArticle::Public::Node::DocsController < Cms::Controller::Public::Base
     return http_error(404) if @docs.current_page > @docs.total_pages
 
     @items = @docs.inject([]) do |result, doc|
-        date = doc.display_published_at.try(:strftime, '%Y年%-m月%-d日')
+        date = if order_type == 'updated'
+                  doc.display_updated_at.try(:strftime, '%Y年%-m月%-d日')
+                else
+                  doc.display_published_at.try(:strftime, '%Y年%-m月%-d日')
+                end
 
         unless result.empty?
-          last_date = result.last[:doc].display_published_at.try(:strftime, '%Y年%-m月%-d日')
+          last_date = if order_type == 'updated'
+                        result.last[:doc].display_updated_at.try(:strftime, '%Y年%-m月%-d日')
+                      else
+                        result.last[:doc].display_published_at.try(:strftime, '%Y年%-m月%-d日')
+                      end
           date = nil if date == last_date
         end
 
