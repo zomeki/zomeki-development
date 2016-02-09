@@ -422,4 +422,15 @@ $(document).ready(function () {
 </table>
 <%- end -%>
 
+<%- if @item.name == 'serial_no_settings' -%>
+<table class="show">
+  <tr>
+    <th>表示タイトル</th>
+    <td>
+      <%= text_field_tag :title, @item.extra_values[:title], class: 'title' %>
+    </td>
+  </tr>
+</table>
+<%- end -%>
+
     <%= render 'gp_article/admin/shared/doc_style_tags' %>

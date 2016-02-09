@@ -84,6 +84,7 @@ class GpArticle::Doc < ActiveRecord::Base
   before_save :set_name
   before_save :set_published_at
   before_save :replace_public
+  before_save :set_serial_no
   before_destroy :keep_edition_relation
   after_destroy :close_page
 
@@ -444,6 +445,7 @@ class GpArticle::Doc < ActiveRecord::Base
       new_doc.published_at = nil
       new_doc.display_published_at = nil
       new_doc.in_tasks = nil
+      new_doc.serial_no = nil
     end
 
     if editable_group
@@ -831,6 +833,12 @@ class GpArticle::Doc < ActiveRecord::Base
 
   def set_published_at
     self.published_at ||= Core.now if self.state == 'public'
+  end
+
+  def set_serial_no
+    return if self.serial_no.present?
+    seq = Util::Sequencer.next_id('gp_article_doc_serial_no', :version => self.content_id)
+    self.serial_no = seq
   end
 
   def set_defaults
