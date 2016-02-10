@@ -71,6 +71,7 @@ ZomekiCMS::Application.routes.draw do
   ## public
   scope "_public/#{mod}", :module => mod, :as => '' do
     match 'node_docs(/(index))' => 'public/node/docs#index'
+    match 'node_docs/rank' => 'public/node/docs#rank'
     get 'node_docs/:name/comments/new' => 'public/node/comments#new', :format => false
     post 'node_docs/:name/comments/confirm' => 'public/node/comments#confirm', :format => false
     post 'node_docs/:name/comments' => 'public/node/comments#create', :format => false

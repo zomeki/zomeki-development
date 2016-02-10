@@ -2,6 +2,7 @@ require 'will_paginate/array'
 
 class GpArticle::Public::Node::DocsController < Cms::Controller::Public::Base
   include GpArticle::Controller::Feed
+  include Rank::Controller::Rank
   skip_filter :render_public_layout, :only => [:file_content]
 
   def pre_dispatch
@@ -138,6 +139,30 @@ class GpArticle::Public::Node::DocsController < Cms::Controller::Public::Base
         http_error(404)
       end
     end
+  end
+  
+  def rank
+    return http_error(404) unless @content.rank_related?
+    return http_error(404) unless @rank_content = @content.rank_content_rank
+    
+    case @content.ranking_term
+    when 'previous_days'
+      @term   = 'previous_days'
+      @target = 'pageviews'
+    when 'last_weeks'
+      @term   = 'last_weeks'
+      @target = 'pageviews'
+    when 'last_months'
+      @term   = 'last_months'
+      @target = 'pageviews'
+    when 'this_weeks'
+      @term   = 'this_weeks'
+      @target = 'pageviews'
+    end
+    
+    @node_uri = Page.current_node.public_uri
+    @ranks  = rank_datas(@rank_content, @term, @target, @content.ranking_display_count, nil, nil, nil, nil, nil, {:page_path => @node_uri})
+    return http_error(404) if @ranks.blank?
   end
 
   private

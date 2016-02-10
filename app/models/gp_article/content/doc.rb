@@ -21,6 +21,7 @@ class GpArticle::Content::Doc < Cms::Content
   EVENT_SYNC_SETTINGS_OPTIONS = [['使用する', 'enabled'], ['使用しない', 'disabled']]
   EVENT_SYNC_DEFAULT_WILL_SYNC_OPTIONS = [['同期する', 'enabled'], ['同期しない', 'disabled']]
   SERIALNO_SETTINGS_OPTIONS = [['使用する', 'enabled'], ['使用しない', 'disabled']]
+  RANKING_TERMS_OPTIONS_OPTIONS = [['前日', 'previous_days'], ['先週（月曜日〜日曜日）', 'last_weeks'], ['先月', 'last_months'], ['週間（前日から一週間）', 'this_weeks']]
 
   default_scope { where(model: 'GpArticle::Doc') }
 
@@ -184,6 +185,14 @@ class GpArticle::Content::Doc < Cms::Content
   def rank_content_rank
     Rank::Content::Rank.find_by_id(setting_extra_value(:rank_relation, :rank_content_id))
   end
+  
+  def ranking_term
+    setting_extra_value(:rank_relation, :ranking_term).to_s
+  end
+
+  def ranking_display_count
+    (setting_extra_value(:rank_relation, :ranking_display_count).presence || 50).to_i
+  end  
 
   def inquiry_related?
     setting_value(:inquiry_setting) == 'enabled'

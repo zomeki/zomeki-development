@@ -145,7 +145,7 @@ module Rank::Controller::Rank
     end
   end
 
-  def rank_datas(content, term, target, per_page, category_option = nil, gp_category = nil, category_type = nil, category = nil, current_item = nil)
+  def rank_datas(content, term, target, per_page, category_option = nil, gp_category = nil, category_type = nil, category = nil, current_item = nil, options = {})
     hostname   = URI.parse(content.site.full_uri).host
     exclusion  = content.setting_value(:exclusion_url).strip.split(/[ |\t|\r|\n|\f]+/) rescue exclusion = ''
     rank_table = Rank::Total.arel_table
@@ -186,6 +186,12 @@ module Rank::Controller::Rank
                                         .where(content_id:  content.id)
                                         .where(page_path:   rank_table[:page_path])
                                         .where(category_id: category_ids).exists)
+    end
+    
+    unless options.blank?
+      if options[:page_path].present?
+        ranks = ranks.where(rank_table[:page_path].matches("#{options[:page_path]}%"))
+      end
     end
 
     ranks = ranks.order('accesses DESC').paginate(page: params[:page], per_page: per_page)

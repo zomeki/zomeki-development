@@ -284,6 +284,19 @@ $(document).ready(function () {
     <td><%= select_tag 'rank_content_id',
                        options_from_collection_for_select(Rank::Content::Rank.where(site_id: Core.site.id), :id, :name, @item.extra_values[:rank_content_id]), include_blank: true %></td>
   </tr>
+  <tr>
+    <th>表示期間</th>
+    <td><%= select_tag :ranking_term,
+                       options_for_select(GpArticle::Content::Doc::RANKING_TERMS_OPTIONS_OPTIONS,
+                                          (@item.extra_values[:ranking_term] || 'disabled')),
+                       include_blank: true %></td>
+  </tr>
+  <tr>
+    <th>表示件数</th>
+    <td>
+      <%= text_field_tag :ranking_display_count, @item.extra_values[:ranking_display_count], class: 'number' %>
+    </td>
+  </tr>
 </table>
 <%- end -%>
 

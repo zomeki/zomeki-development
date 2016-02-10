@@ -86,6 +86,8 @@ class GpArticle::Admin::Content::SettingsController < Cms::Controller::Admin::Ba
         extra_values[:state] = params[:state]
       when 'rank_relation'
         extra_values[:rank_content_id] = params[:rank_content_id].to_i
+        extra_values[:ranking_term] = params[:ranking_term]
+        extra_values[:ranking_display_count] = params[:ranking_display_count]
       when 'serial_no_settings'
         extra_values[:title] = params[:title]
       end
@@ -99,6 +101,12 @@ class GpArticle::Admin::Content::SettingsController < Cms::Controller::Admin::Ba
       end
       if @item.name == 'map_relation' && @content.map_content_marker.nil?
         @content.docs.where(marker_state: 'visible').update_all(marker_state: 'hidden')
+      end
+      if @item.name == 'rank_relation' && @content.rank_content_rank.nil?
+        if node = @content.public_node
+          pub = Sys::Publisher.arel_table
+          Sys::Publisher.where(unid: node.unid).where(pub[:dependent].matches("rank%")).delete_all
+        end
       end
     end
   end
