@@ -60,6 +60,7 @@ class GpArticle::Admin::Content::SettingsController < Cms::Controller::Admin::Ba
       when 'inquiry_setting'
         extra_values[:state] = params[:state]
         extra_values[:display_fields] = params[:display_fields] || []
+        extra_values[:title] = params[:title].to_s
       when 'approval_relation'
         extra_values[:approval_content_id] = params[:approval_content_id].to_i
       when 'gp_template_content_template_id'

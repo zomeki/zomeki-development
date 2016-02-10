@@ -63,6 +63,14 @@ module Cms::Model::Rel::ManyInquiry
       ['group_id', 'charge', 'address', 'tel', 'fax', 'email', 'note']
     end
   end
+  
+  def inquiry_title
+    if content && content.inquiry_extra_values && !content.inquiry_extra_values[:title].blank?
+      content.inquiry_extra_values[:title]
+    else
+      'お問い合わせ'
+    end
+  end
 
   def inquiry_display_field?(name)
     inquiry_display_fields.include?(name.to_s)

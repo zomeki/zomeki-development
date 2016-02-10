@@ -314,6 +314,10 @@ $(document).ready(function () {
       <%- end -%>
     </td>
   </tr>
+  <tr>
+    <th>表示タイトル</th>
+    <td><%= text_field_tag 'title', @item.extra_values[:title], style: 'width: 400px;' %></td>
+  </tr>
 </table>
 <%- end -%>
 
