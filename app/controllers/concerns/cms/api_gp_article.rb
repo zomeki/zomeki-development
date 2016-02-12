@@ -85,6 +85,10 @@ module Cms::ApiGpArticle
                       docs.order('display_published_at DESC, published_at DESC')
                     when 'published_at_asc'
                       docs.order('display_published_at ASC, published_at ASC')
+                    when 'updated_at_desc'
+                      docs.order('display_updated_at DESC, updated_at DESC')
+                    when 'updated_at_asc'
+                      docs.order('display_updated_at ASC, updated_at ASC')
                     when 'random'
                       docs.order('RAND()')
                     else
