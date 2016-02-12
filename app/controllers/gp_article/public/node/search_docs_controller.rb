@@ -1,3 +1,5 @@
+require 'will_paginate/array'
+
 class GpArticle::Public::Node::SearchDocsController < Cms::Controller::Public::Base
   def pre_dispatch
     @content = GpArticle::Content::Doc.find_by_id(Page.current_node.content.id)
@@ -10,7 +12,7 @@ class GpArticle::Public::Node::SearchDocsController < Cms::Controller::Public::B
     if @s_keyword.blank?
       @docs = []
     else
-      @docs = public_or_preview_docs
+      @docs = @content.public_docs
       docs = @docs.arel_table
       @docs = @docs.where(docs[:title].matches("%#{@s_keyword}%")
                       .or(docs[:body].matches("%#{@s_keyword}%")))
@@ -23,21 +25,6 @@ class GpArticle::Public::Node::SearchDocsController < Cms::Controller::Public::B
     end
 
     render :index_mobile if Page.mobile?
-  end
-
-  private
-
-  def public_or_preview_docs(id: nil, name: nil)
-    unless Core.mode == 'preview'
-      docs = @content.public_docs
-      name ? docs.find_by_name(name) : docs
-    else
-      if Core.publish
-        @content.public_docs
-      else
-        @content.public_docs
-      end
-    end
   end
 
   
