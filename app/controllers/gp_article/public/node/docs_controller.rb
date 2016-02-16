@@ -162,7 +162,6 @@ class GpArticle::Public::Node::DocsController < Cms::Controller::Public::Base
     
     @node_uri = Page.current_node.public_uri
     @ranks  = rank_datas(@rank_content, @term, @target, @content.ranking_display_count, nil, nil, nil, nil, nil, {:page_path => @node_uri})
-    return http_error(404) if @ranks.blank?
   end
 
   private
