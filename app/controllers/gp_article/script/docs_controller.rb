@@ -8,6 +8,9 @@ class GpArticle::Script::DocsController < Cms::Controller::Script::Publication
     publish_page(@node, :uri => "#{uri}index.rss", :path => "#{path}index.rss", :dependent => :rss)
     publish_page(@node, :uri => "#{uri}index.atom", :path => "#{path}index.atom", :dependent => :atom)
     publish_more(@node, :uri => uri, :path => path, :smart_phone_path => smart_phone_path)
+    if @node.content.rank_related?
+      publish_more(@node, :uri => uri, :path => path, :smart_phone_path => smart_phone_path, :file => 'rank', :dependent => :rank)
+    end
     render text: 'OK'
   end
 

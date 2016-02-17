@@ -20,6 +20,8 @@ class GpArticle::Content::Setting < Cms::ContentSetting
     comment: I18n.t('comments.date_style').html_safe
   set_config :time_style, name: "#{GpArticle::Doc.model_name.human}時間形式",
     comment: I18n.t('comments.time_style').html_safe
+  set_config :docs_order, name: "#{GpArticle::Doc.model_name.human}一覧表示順",
+    options: GpArticle::Content::Doc::DOCS_ORDER_OPTIONS
   set_config :feed, name: "フィード",
     options: GpArticle::Content::Doc::FEED_DISPLAY_OPTIONS,
     form_type: :radio_buttons
@@ -36,6 +38,9 @@ class GpArticle::Content::Setting < Cms::ContentSetting
     form_type: :check_boxes
   set_config :map_relation, name: 'マップ',
     options: GpArticle::Content::Doc::MAP_RELATION_OPTIONS,
+    form_type: :radio_buttons
+  set_config :rank_relation, name: 'アクセスランキング',
+    options: GpArticle::Content::Doc::RANK_RELATION_OPTIONS,
     form_type: :radio_buttons
   set_config :display_dates, name: '記事日付表示',
     options: [['公開日', 'published_at'], ['最終更新日', 'updated_at']],
@@ -62,6 +67,9 @@ class GpArticle::Content::Setting < Cms::ContentSetting
     form_type: :radio_buttons
   set_config :qrcode_settings, name: 'QRコード',
     options: GpArticle::Content::Doc::QRCODE_SETTINGS_OPTIONS,
+    form_type: :radio_buttons
+  set_config :serial_no_settings, name: '記事番号表示',
+    options: GpArticle::Content::Doc::SERIALNO_SETTINGS_OPTIONS,
     form_type: :radio_buttons
 
   after_initialize :set_defaults
@@ -104,7 +112,8 @@ class GpArticle::Content::Setting < Cms::ContentSetting
 
   def default_inquiry_setting
     {
-      display_fields: ['group_id', 'address', 'tel', 'fax', 'email', 'note']
+      display_fields: ['group_id', 'address', 'tel', 'fax', 'email', 'note'],
+      title: "お問い合わせ"
     }
   end
 
@@ -140,6 +149,8 @@ class GpArticle::Content::Setting < Cms::ContentSetting
     when 'qrcode_settings'
       self.value = 'disabled' if value.blank?
       self.extra_values = { state: 'hidden' } if extra_values.blank?
+    when 'serial_no_settings'
+      self.value = 'disabled' if value.blank?
     end
   end
 end

@@ -46,6 +46,9 @@ ZomekiCMS::Application.routes.draw do
     resources :node_archives,
       :controller => 'admin/node/archives',
       :path       => ':parent/node_archives'
+    resources :node_search_docs,
+      :controller => 'admin/node/search_docs',
+      :path       => ':parent/node_search_docs'
 
     ## pieces
     resources :piece_docs,
@@ -61,11 +64,14 @@ ZomekiCMS::Application.routes.draw do
       :controller => 'admin/piece/comments'
     resources :piece_archives,
       :controller => 'admin/piece/archives'
+    resources :piece_search_docs,
+      :controller => 'admin/piece/search_docs'
   end
 
   ## public
   scope "_public/#{mod}", :module => mod, :as => '' do
     match 'node_docs(/(index))' => 'public/node/docs#index'
+    match 'node_docs/rank' => 'public/node/docs#rank'
     get 'node_docs/:name/comments/new' => 'public/node/comments#new', :format => false
     post 'node_docs/:name/comments/confirm' => 'public/node/comments#confirm', :format => false
     post 'node_docs/:name/comments' => 'public/node/comments#create', :format => false
@@ -77,5 +83,6 @@ ZomekiCMS::Application.routes.draw do
     match 'node_docs/:name(/(:filename_base.:format))' => 'public/node/docs#show'
     get 'node_archives/:year(/(index))' => 'public/node/archives#index'
     get 'node_archives/:year/:month(/(index))' => 'public/node/archives#index'
+    get 'node_search_docs(/(index))' => 'public/node/search_docs#index'
   end
 end

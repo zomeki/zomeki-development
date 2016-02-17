@@ -1,6 +1,7 @@
 # encoding: utf-8
 class GpArticle::Piece::Doc < Cms::Piece
-  DOCS_ORDER_OPTIONS = [['公開日（降順）', 'published_at_desc'], ['公開日（昇順）', 'published_at_asc'], ['ランダム', 'random']]
+  DOCS_ORDER_OPTIONS = [['公開日（降順）', 'published_at_desc'], ['公開日（昇順）', 'published_at_asc'], 
+                        ['更新日（降順）', 'updated_at_desc'], ['更新日（昇順）', 'updated_at_asc'], ['ランダム', 'random']]
   IMPL_OPTIONS = [['動的', 'dynamic'], ['静的', 'static']]
 
   default_scope where(model: 'GpArticle::Doc')

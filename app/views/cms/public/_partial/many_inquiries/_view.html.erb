@@ -4,7 +4,7 @@ return if item.inquiries.size == 0
 return if !item.inquiries.any?(&:visible?)
 
 -%><div class="inquiry">
-  <h2>お問い合わせ</h2>
+  <h2><%= item.inquiry_title -%></h2>
   <%- item.inquiries.each do |inquiry| -%>
     <%- next unless inquiry.visible? -%>
     <address>
