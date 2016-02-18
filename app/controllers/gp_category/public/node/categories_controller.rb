@@ -1,5 +1,7 @@
 # encoding: utf-8
 class GpCategory::Public::Node::CategoriesController < GpCategory::Public::Node::BaseController
+  include Rank::Controller::Rank
+
   def show
     category_type = @content.category_types.find_by_name(params[:category_type_name])
     @category = category_type.find_category_by_path_from_root_category(params[:category_names])
@@ -156,5 +158,35 @@ class GpCategory::Public::Node::CategoriesController < GpCategory::Public::Node:
         end
       end
     end
+  end
+  
+  def rank
+    return http_error(404) unless @content.rank_related?
+    return http_error(404) unless @rank_content = @content.rank_content_rank
+    
+    category_type = @content.category_types.find_by_name(params[:category_type_name])
+    @category = category_type.find_category_by_path_from_root_category(params[:category_names])
+    return http_error(404) unless @category.try(:public?)
+
+    Page.current_item = @category
+    Page.title = @category.title
+
+    case @content.ranking_term
+    when 'previous_days'
+      @term   = 'previous_days'
+      @target = 'pageviews'
+    when 'last_weeks'
+      @term   = 'last_weeks'
+      @target = 'pageviews'
+    when 'last_months'
+      @term   = 'last_months'
+      @target = 'pageviews'
+    when 'this_weeks'
+      @term   = 'this_weeks'
+      @target = 'pageviews'
+    end
+    
+    @node_uri = Page.current_node.public_uri
+    @ranks  = rank_datas(@rank_content, @term, @target, @content.ranking_display_count, 'on')
   end
 end

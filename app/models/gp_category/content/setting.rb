@@ -22,6 +22,9 @@ class GpCategory::Content::Setting < Cms::ContentSetting
           []
         end
       end}
+  set_config :rank_relation, name: 'アクセスランキング',
+    options: GpArticle::Content::Doc::RANK_RELATION_OPTIONS,
+    form_type: :radio_buttons
   set_config :feed, :name => "フィード",
     :options => GpCategory::Content::CategoryType::FEED_DISPLAY_OPTIONS,
     :form_type => :radio_buttons
