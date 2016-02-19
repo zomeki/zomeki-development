@@ -23,7 +23,7 @@ module Sys::Model::Rel::Editor
 
     return false if Core.user_group.blank? || Core.user.blank?
     
-    last_editor.update_column(:last_is, 0) if last_editor
+    Sys::Editor.where(parent_unid: unid, last_is: 1).update_all(last_is: 0)
 
     _editor = editors.build
     _editor.parent_unid = unid
