@@ -14,6 +14,8 @@ class GpCategory::Content::Setting < Cms::ContentSetting
     :options => GpCategory::Content::CategoryType::CATEGORY_STYLE_OPTIONS
   set_config :doc_style, :name => '新着記事一覧表示形式',
     :options => GpCategory::Content::CategoryType::DOC_STYLE_OPTIONS
+  set_config :docs_order, :name => '記事一覧表示順',
+    :options => GpCategory::Content::CategoryType::DOCS_ORDER_OPTIONS
   set_config :index_template_id, :name => 'index設定',
     :options => lambda {->(content=nil) do
         if content
@@ -22,6 +24,9 @@ class GpCategory::Content::Setting < Cms::ContentSetting
           []
         end
       end}
+  set_config :rank_relation, name: 'アクセスランキング',
+    options: GpArticle::Content::Doc::RANK_RELATION_OPTIONS,
+    form_type: :radio_buttons
   set_config :feed, :name => "フィード",
     :options => GpCategory::Content::CategoryType::FEED_DISPLAY_OPTIONS,
     :form_type => :radio_buttons

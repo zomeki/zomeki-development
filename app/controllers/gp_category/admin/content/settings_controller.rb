@@ -27,7 +27,7 @@ class GpCategory::Admin::Content::SettingsController < Cms::Controller::Admin::B
     @item = GpCategory::Content::Setting.config(@content, params[:id])
     @item.value = params[:item][:value]
 
-    if @item.name.in?('category_type_style', 'category_style', 'doc_style', 'feed')
+    if @item.name.in?('category_type_style', 'category_style', 'doc_style', 'feed', 'rank_relation')
       extra_values = @item.extra_values
 
       case @item.name
@@ -43,12 +43,23 @@ class GpCategory::Admin::Content::SettingsController < Cms::Controller::Admin::B
       when 'feed'
         extra_values[:feed_docs_number] = params[:feed_docs_number]
         extra_values[:feed_docs_period] = params[:feed_docs_period]
+      when 'rank_relation'
+        extra_values[:rank_content_id] = params[:rank_content_id].to_i
+        extra_values[:ranking_term] = params[:ranking_term]
+        extra_values[:ranking_display_count] = params[:ranking_display_count]
       end
 
       @item.extra_values = extra_values
     end
 
-    _update @item
+    _update(@item) do
+      if @item.name == 'rank_relation' && @content.rank_content_rank.nil?
+        if node = @content.public_node
+          pub = Sys::Publisher.arel_table
+          Sys::Publisher.where(unid: node.unid).where(pub[:dependent].matches("rank%")).delete_all
+        end
+      end
+    end
   end
 
   def copy_groups

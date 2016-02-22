@@ -3,7 +3,11 @@ class GpCategory::Content::CategoryType < Cms::Content
   CATEGORY_TYPE_STYLE_OPTIONS = [['全カテゴリ一覧', 'all_categories'], ['全記事一覧', 'all_docs'], ['カテゴリ＋記事', 'categories_with_docs']]
   CATEGORY_STYLE_OPTIONS = [['カテゴリ一覧＋記事一覧', 'categories_and_docs'], ['カテゴリ＋記事', 'categories_with_docs']]
   DOC_STYLE_OPTIONS = [['全記事一覧', 'all_docs']]
+  DOCS_ORDER_OPTIONS = [['公開日（降順）', 'published_at_desc'], ['公開日（昇順）', 'published_at_asc'], 
+                        ['更新日（降順）', 'updated_at_desc'], ['更新日（昇順）', 'updated_at_asc']]
   FEED_DISPLAY_OPTIONS = [['表示する', 'enabled'], ['表示しない', 'disabled']]
+  RANK_RELATION_OPTIONS = [['使用する', 'enabled'], ['使用しない', 'disabled']]
+  RANKING_TERMS_OPTIONS = [['前日', 'previous_days'], ['先週（月曜日〜日曜日）', 'last_weeks'], ['先月', 'last_months'], ['週間（前日から一週間）', 'this_weeks']]
 
   default_scope { where(model: 'GpCategory::CategoryType') }
 
@@ -91,6 +95,26 @@ class GpCategory::Content::CategoryType < Cms::Content
     (setting_extra_value(:doc_style, :doc_docs_number).presence || 1000).to_i
   end
 
+  def docs_order
+    setting_value(:docs_order).to_s
+  end
+
+  def rank_related?
+    setting_value(:rank_relation) == 'enabled'
+  end
+
+  def rank_content_rank
+    Rank::Content::Rank.find_by_id(setting_extra_value(:rank_relation, :rank_content_id))
+  end
+  
+  def ranking_term
+    setting_extra_value(:rank_relation, :ranking_term).to_s
+  end
+
+  def ranking_display_count
+    (setting_extra_value(:rank_relation, :ranking_display_count).presence || 50).to_i
+  end  
+
   def feed_display?
     setting_value(:feed) != 'disabled'
   end
@@ -113,6 +137,8 @@ class GpCategory::Content::CategoryType < Cms::Content
     in_settings[:list_style] = '@title_link@(@publish_date@ @group@)' unless setting_value(:list_style)
     in_settings[:date_style] = '%Y年%m月%d日 %H時%M分' unless setting_value(:date_style)
     in_settings[:time_style] = '%H時%M分' unless setting_value(:time_style)
+    in_settings[:docs_order] = DOCS_ORDER_OPTIONS.first.last unless setting_value(:docs_order)
+    in_settings[:rank_relation] = RANK_RELATION_OPTIONS.first.last unless setting_value(:rank_relation)
     in_settings[:feed] = 'enabled' unless setting_value(:feed)
   end
 end
