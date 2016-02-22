@@ -8,14 +8,21 @@ class GpArticle::Public::Node::SearchDocsController < Cms::Controller::Public::B
 
   def index
     
-    @s_keyword = params[:s_keyword]
+    @s_keyword = params[:s_keyword].gsub(/^[[:blank:]]+|[[:blank:]]+$/, '')
     if @s_keyword.blank?
       @docs = []
     else
       @docs = @content.public_docs
       docs = @docs.arel_table
-      @docs = @docs.where(docs[:title].matches("%#{@s_keyword}%")
-                      .or(docs[:body].matches("%#{@s_keyword}%")))
+      
+      keywords = @s_keyword.split(/[[:blank:]]/)
+      
+      keywords.each do |key|
+        next if key.blank?
+        @docs = @docs.where(docs[:title].matches("%#{key}%")
+                      .or(docs[:body].matches("%#{key}%")))
+      end
+
       @docs = @docs.order('display_published_at DESC, published_at DESC')
 
       @docs = @docs.includes(:next_edition).reject{|d| d.will_be_replaced? } unless Core.publish
