@@ -66,6 +66,8 @@ ZomekiCMS::Application.routes.draw do
       :controller => 'admin/piece/archives'
     resources :piece_search_docs,
       :controller => 'admin/piece/search_docs'
+    resources :piece_ranks,
+      :controller => 'admin/piece/ranks'
   end
 
   ## public
