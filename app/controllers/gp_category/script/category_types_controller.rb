@@ -23,6 +23,11 @@ class GpCategory::Script::CategoryTypesController < Cms::Controller::Script::Pub
       publish_more(category_type, :uri => uri, :path => path, :file => 'more', :dependent => "#{category_type.name}/more_docs")
       publish_more(category_type, :uri => uri, :path => smart_phone_path, :file => 'more', :dependent => "#{category_type.name}/more_docs_smart_phone", :smart_phone => true)
 
+      if @node.content.rank_related?
+        publish_page(category_type, :uri => "#{uri}rank.html", :path => "#{path}rank.html",
+                      :smart_phone_path => "#{smart_phone_path}rank.html", :dependent => "#{category_type.name}/rank")
+      end
+
       if (child_id = params[:target_child_id]).present?
         category_type.public_categories.where(id: child_id).each do |category|
           publish_category(category, follow_children: false)
@@ -61,6 +66,10 @@ class GpCategory::Script::CategoryTypesController < Cms::Controller::Script::Pub
     publish_more(cat.category_type, :uri => uri, :path => smart_phone_path, :dependent => "#{cat_path}more_smart_phone", :smart_phone => true)
     publish_more(cat.category_type, :uri => uri, :path => path, :file => 'more', :dependent => "#{cat_path}more_docs")
     publish_more(cat.category_type, :uri => uri, :path => smart_phone_path, :file => 'more', :dependent => "#{cat_path}more_docs_smart_phone", :smart_phone => true)
+    if @node.content.rank_related?
+      publish_page(cat.category_type, :uri => "#{uri}rank.html", :path => "#{path}rank.html", 
+                    :smart_phone_path => "#{smart_phone_path}rank.html", :dependent => "#{cat_path}rank")
+    end
 
     if feed_pieces = category_feed_pieces(cat)
       feed_pieces.each do |piece|

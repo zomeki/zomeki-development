@@ -12,4 +12,6 @@
 
 </div>
 
-<%= paginate @ranks %>
+<%- if @ranks.total_pages > 1 -%>
+<div class="message">上位<%= @content.ranking_display_count -%>件を表示しています</div>
+<%- end -%>

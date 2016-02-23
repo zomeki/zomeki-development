@@ -210,8 +210,12 @@ class GpCategory::Public::Node::CategoriesController < GpCategory::Public::Node:
       @term   = 'this_weeks'
       @target = 'pageviews'
     end
+    @term = 'all'
     
     @node_uri = Page.current_node.public_uri
-    @ranks  = rank_datas(@rank_content, @term, @target, @content.ranking_display_count, 'on')
+    options = {:page_path => @node_uri,
+              :exclusion_url => [@node_uri, "#{@node_uri}rank.html"]}
+    @ranks  = rank_datas(@rank_content, @term, @target, @content.ranking_display_count,
+                          'on', nil, nil, nil, nil, options)
   end
 end
