@@ -149,13 +149,21 @@ module Rank::Controller::Rank
     hostname   = URI.parse(content.site.full_uri).host
     exclusion  = content.setting_value(:exclusion_url).strip.split(/[ |\t|\r|\n|\f]+/) rescue exclusion = ''
     rank_table = Rank::Total.arel_table
-
+    
+    if !options.blank? && options[:exclusion_url].present?
+      exclusion = [] if exclusion.blank?
+      options[:exclusion_url].each do |url|
+        exclusion << url
+      end 
+    end
+    
     ranks = Rank::Total.select('*')
                        .select(rank_table[target].as('accesses'))
                        .where(content_id: content.id)
                        .where(term:       term)
                        .where(hostname:   hostname)
                        .where(rank_table[:page_path].not_in(exclusion))
+                       .where(rank_table[:page_path].does_not_match('/_preview/%'))
 
     category_ids = []
     if category_option == 'on'

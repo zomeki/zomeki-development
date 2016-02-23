@@ -15,4 +15,5 @@ Cms::Lib::Modules::ModuleSet.draw :gp_article, '汎用記事' do |mod|
   mod.piece :archives, 'アーカイブ'
   mod.piece :comments, '最新コメント'
   mod.piece :search_docs, '検索フォーム'
+  mod.piece :ranks, 'アクセスランキング一覧'
 end

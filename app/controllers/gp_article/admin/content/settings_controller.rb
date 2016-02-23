@@ -103,10 +103,13 @@ class GpArticle::Admin::Content::SettingsController < Cms::Controller::Admin::Ba
       if @item.name == 'map_relation' && @content.map_content_marker.nil?
         @content.docs.where(marker_state: 'visible').update_all(marker_state: 'hidden')
       end
-      if @item.name == 'rank_relation' && @content.rank_content_rank.nil?
+      if @item.name == 'rank_relation' && (@content.rank_content_rank.nil? || !@content.rank_related?)
         if node = @content.public_node
           pub = Sys::Publisher.arel_table
-          Sys::Publisher.where(unid: node.unid).where(pub[:dependent].matches("rank%")).delete_all
+          publishers = Sys::Publisher.where(unid: node.unid).where(pub[:dependent].matches("rank%")).all
+          publishers.each do |p|
+            p.destroy
+          end
         end
       end
     end
