@@ -53,10 +53,15 @@ class GpCategory::Admin::Content::SettingsController < Cms::Controller::Admin::B
     end
 
     _update(@item) do
-      if @item.name == 'rank_relation' && @content.rank_content_rank.nil?
+      if @item.name == 'rank_relation' && (@content.rank_content_rank.nil? || !@content.rank_related?)
         if node = @content.public_node
           pub = Sys::Publisher.arel_table
-          Sys::Publisher.where(unid: node.unid).where(pub[:dependent].matches("rank%")).delete_all
+          node_path = node.public_path.gsub(/^#{Rails.root.to_s}/, '.')
+          publishers = Sys::Publisher.where(pub[:path].matches("#{node_path}%"))
+          publishers = publishers.where(pub[:dependent].matches("%rank%")).all
+          publishers.each do |p|
+            p.destroy
+          end
         end
       end
     end
