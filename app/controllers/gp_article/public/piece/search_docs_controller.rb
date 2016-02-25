@@ -10,7 +10,7 @@ class GpArticle::Public::Piece::SearchDocsController < Sys::Controller::Public::
 
   def index
     
-    @s_keyword = params[:s_keyword].gsub(/^[[:blank:]]+|[[:blank:]]+$/, '')
+    @s_keyword = params[:s_keyword].to_s.gsub(/^[[:blank:]]+|[[:blank:]]+$/, '')
     
   end
 end
