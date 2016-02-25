@@ -77,7 +77,7 @@ module Rank::Controller::Rank
             from = (t - 1.month).beginning_of_month
             to   = (t - 1.month).end_of_month
           when 'this_weeks'
-            from = t.yesterday - 7.days
+            from = t.yesterday - 14.days
             to   = t.yesterday
           end
 

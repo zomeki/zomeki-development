@@ -7,7 +7,7 @@ Cms::Lib::Modules::ModuleSet.draw :rank, 'アクセスランキング' do |mod|
   mod.directory :previous_days, '前日'
   mod.directory :last_weeks, '先週（月曜日〜日曜日）'
   mod.directory :last_months, '先月'
-  mod.directory :this_weeks, '週間（前日から一週間）'
+  mod.directory :this_weeks, '週間（前日から二週間）'
 
   ## pieces
   mod.piece :ranks, 'アクセスランキング一覧'

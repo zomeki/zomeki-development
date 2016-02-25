@@ -21,7 +21,7 @@ class GpArticle::Content::Doc < Cms::Content
   EVENT_SYNC_SETTINGS_OPTIONS = [['使用する', 'enabled'], ['使用しない', 'disabled']]
   EVENT_SYNC_DEFAULT_WILL_SYNC_OPTIONS = [['同期する', 'enabled'], ['同期しない', 'disabled']]
   SERIALNO_SETTINGS_OPTIONS = [['使用する', 'enabled'], ['使用しない', 'disabled']]
-  RANKING_TERMS_OPTIONS_OPTIONS = [['前日', 'previous_days'], ['先週（月曜日〜日曜日）', 'last_weeks'], ['先月', 'last_months'], ['週間（前日から一週間）', 'this_weeks']]
+  RANKING_TERMS_OPTIONS_OPTIONS = [['前日', 'previous_days'], ['先週（月曜日〜日曜日）', 'last_weeks'], ['先月', 'last_months'], ['週間（前日から二週間）', 'this_weeks']]
 
   default_scope { where(model: 'GpArticle::Doc') }
 
