@@ -7,7 +7,7 @@ class GpCategory::Content::CategoryType < Cms::Content
                         ['更新日（降順）', 'updated_at_desc'], ['更新日（昇順）', 'updated_at_asc']]
   FEED_DISPLAY_OPTIONS = [['表示する', 'enabled'], ['表示しない', 'disabled']]
   RANK_RELATION_OPTIONS = [['使用する', 'enabled'], ['使用しない', 'disabled']]
-  RANKING_TERMS_OPTIONS = [['前日', 'previous_days'], ['先週（月曜日〜日曜日）', 'last_weeks'], ['先月', 'last_months'], ['週間（前日から一週間）', 'this_weeks']]
+  RANKING_TERMS_OPTIONS = [['前日', 'previous_days'], ['先週（月曜日〜日曜日）', 'last_weeks'], ['先月', 'last_months'], ['週間（前日から二週間）', 'this_weeks']]
 
   default_scope { where(model: 'GpCategory::CategoryType') }
 
