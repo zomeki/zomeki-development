@@ -8,7 +8,7 @@ class GpArticle::Public::Node::SearchDocsController < Cms::Controller::Public::B
 
   def index
     
-    @s_keyword = params[:s_keyword].gsub(/^[[:blank:]]+|[[:blank:]]+$/, '')
+    @s_keyword = params[:s_keyword].to_s.gsub(/^[[:blank:]]+|[[:blank:]]+$/, '')
     if @s_keyword.blank?
       @docs = []
     else
