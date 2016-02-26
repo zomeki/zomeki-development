@@ -17,7 +17,7 @@ $(document).ready(function () {
           var l = $('<li>');
           if (i <= 10) l.attr('class', 'ranking'+i);
           l.append($('<span>', {'class': 'rank', 'text': i}));
-          l.append($('<a>', {'href': item['url'], 'target': '_blank', 'text': item['title']}));
+          l.append($('<a>', {'href': item['url'], 'text': item['title']}));
           if (item['count'] !== null) l.append($('<span>', {'class': 'count', 'text': '('+item['count']+')'}));
           u.append(l);
         });
