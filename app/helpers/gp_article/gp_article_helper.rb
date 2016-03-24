@@ -42,6 +42,7 @@ module GpArticle::GpArticleHelper
 
   def og_tags(item)
     return '' if item.nil?
+    return '' if !item.respond_to?(:site) && !item.respond_to?(:content)
     %w!type title description image!.map{ |key|
       unless item.respond_to?("og_#{key}") && (value = item.send("og_#{key}")).present?
         site = item.respond_to?(:site) ? item.site : item.content.site
