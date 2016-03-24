@@ -8,6 +8,7 @@ module Cms::ApiGpArticle
     case path.shift
     when 'piece_archives'; gp_article_piece_archives(path: path, version: version)
     when 'piece_docs'; gp_article_piece_docs(path: path, version: version)
+    when 'piece_ranks'; gp_article_piece_ranks(path: path, version: version)
     else render_404
     end
   end
@@ -85,6 +86,10 @@ module Cms::ApiGpArticle
                       docs.order('display_published_at DESC, published_at DESC')
                     when 'published_at_asc'
                       docs.order('display_published_at ASC, published_at ASC')
+                    when 'updated_at_desc'
+                      docs.order('display_updated_at DESC, updated_at DESC')
+                    when 'updated_at_asc'
+                      docs.order('display_updated_at ASC, updated_at ASC')
                     when 'random'
                       docs.order('RAND()')
                     else
@@ -99,4 +104,47 @@ module Cms::ApiGpArticle
     render json: result
   end
 
+  def gp_article_piece_ranks(path:, version:)
+    return render_404 if path.present?
+    return render_405 unless request.get?
+    return render_404 unless version == '20150401'
+
+    piece = GpArticle::Piece::Rank.where(id: params[:piece_id]).first
+    return render(json: {}) unless piece
+    content = GpArticle::Content::Doc.find_by_id(piece.content_id)
+    return render(json: {}) unless content
+    rank_content = content.rank_content_rank
+    return render(json: {}) unless content.rank_related?
+    return render(json: {}) unless rank_content = content.rank_content_rank
+
+
+    begin
+      current_item = params[:current_item_class].constantize.find(params[:current_item_id])
+    rescue => e
+      warn_log "#{__FILE__}:#{__LINE__} #{e.message}"
+      return render(json: {})
+    end
+
+    term = piece.ranking_term
+    target = piece.ranking_target
+    term = 'all'
+    
+    node_uri = content.public_node.public_uri
+    options = {:page_path => node_uri,
+              :exclusion_url => [node_uri, "#{node_uri}rank.html"]}
+    ranks = rank_datas(rank_content, term, target, piece.display_count, nil, nil, nil, nil, nil, options)
+
+    result = {}
+    result[:ranks] = ranks.map do |rank|
+                         {title: rank.page_title,
+                            url: "#{request.scheme}://#{rank.hostname}#{rank.page_path}",
+                          count: piece.show_count == 0 ? nil : rank.accesses}
+                       end
+    result[:more] = if (body = piece.more_link_body).present? && (url = piece.more_link_url).present?
+                      {body: body, url: url}
+                    end
+
+    render json: result
+  end
+  
 end

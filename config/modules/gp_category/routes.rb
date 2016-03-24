@@ -65,6 +65,7 @@ ZomekiCMS::Application.routes.draw do
     match 'node_category_types(/index.:format)' => 'public/node/category_types#index'
     match 'node_category_types/:name/:file.:format' => 'public/node/category_types#show'
     match 'node_category_types/:name' => 'public/node/category_types#show', :format => false
+    match 'node_category_types/:category_type_name/*category_names/rank' => 'public/node/categories#rank'
     match 'node_category_types/:category_type_name/*category_names/:file.:format' => 'public/node/categories#show'
     match 'node_category_types/:category_type_name/*category_names' => 'public/node/categories#show', :format => false
     match 'node_docs(/index)' => 'public/node/docs#index'

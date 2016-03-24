@@ -37,7 +37,8 @@ class GpArticle::Admin::Content::SettingsController < Cms::Controller::Admin::Ba
 
     if @item.name.in?('gp_category_content_category_type_id', 'calendar_relation', 'map_relation', 'inquiry_setting',
                       'approval_relation', 'gp_template_content_template_id', 'feed', 'tag_relation', 'sns_share_relation',
-                      'blog_functions', 'feature_settings', 'list_style', 'qrcode_settings', 'basic_setting')
+                      'blog_functions', 'feature_settings', 'list_style', 'qrcode_settings', 'basic_setting',
+                      'rank_relation','serial_no_settings')
       extra_values = @item.extra_values
 
       case @item.name
@@ -59,6 +60,7 @@ class GpArticle::Admin::Content::SettingsController < Cms::Controller::Admin::Ba
       when 'inquiry_setting'
         extra_values[:state] = params[:state]
         extra_values[:display_fields] = params[:display_fields] || []
+        extra_values[:title] = params[:title].to_s
       when 'approval_relation'
         extra_values[:approval_content_id] = params[:approval_content_id].to_i
       when 'gp_template_content_template_id'
@@ -83,6 +85,12 @@ class GpArticle::Admin::Content::SettingsController < Cms::Controller::Admin::Ba
         extra_values[:wrapper_tag] = params[:wrapper_tag]
       when 'qrcode_settings'
         extra_values[:state] = params[:state]
+      when 'rank_relation'
+        extra_values[:rank_content_id] = params[:rank_content_id].to_i
+        extra_values[:ranking_term] = params[:ranking_term]
+        extra_values[:ranking_display_count] = params[:ranking_display_count]
+      when 'serial_no_settings'
+        extra_values[:title] = params[:title]
       end
 
       @item.extra_values = extra_values
@@ -94,6 +102,15 @@ class GpArticle::Admin::Content::SettingsController < Cms::Controller::Admin::Ba
       end
       if @item.name == 'map_relation' && @content.map_content_marker.nil?
         @content.docs.where(marker_state: 'visible').update_all(marker_state: 'hidden')
+      end
+      if @item.name == 'rank_relation' && (@content.rank_content_rank.nil? || !@content.rank_related?)
+        if node = @content.public_node
+          pub = Sys::Publisher.arel_table
+          publishers = Sys::Publisher.where(unid: node.unid).where(pub[:dependent].matches("rank%")).all
+          publishers.each do |p|
+            p.destroy
+          end
+        end
       end
     end
   end

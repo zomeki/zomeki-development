@@ -6,6 +6,7 @@ Cms::Lib::Modules::ModuleSet.draw :gp_article, '汎用記事' do |mod|
   ## directories
   mod.directory :docs, '汎用記事ページ'
   mod.directory :archives, 'アーカイブ一覧'
+  mod.directory :search_docs, '検索結果一覧'
 
   ## pieces
   mod.piece :docs, '汎用記事一覧'
@@ -13,4 +14,6 @@ Cms::Lib::Modules::ModuleSet.draw :gp_article, '汎用記事' do |mod|
   mod.piece :monthly_archives, '月間アーカイブ'
   mod.piece :archives, 'アーカイブ'
   mod.piece :comments, '最新コメント'
+  mod.piece :search_docs, '検索フォーム'
+  mod.piece :ranks, 'アクセスランキング一覧'
 end

@@ -77,7 +77,7 @@ module Rank::Controller::Rank
             from = (t - 1.month).beginning_of_month
             to   = (t - 1.month).end_of_month
           when 'this_weeks'
-            from = t.yesterday - 7.days
+            from = t.yesterday - 14.days
             to   = t.yesterday
           end
 
@@ -145,17 +145,25 @@ module Rank::Controller::Rank
     end
   end
 
-  def rank_datas(content, term, target, per_page, category_option = nil, gp_category = nil, category_type = nil, category = nil, current_item = nil)
+  def rank_datas(content, term, target, per_page, category_option = nil, gp_category = nil, category_type = nil, category = nil, current_item = nil, options = {})
     hostname   = URI.parse(content.site.full_uri).host
     exclusion  = content.setting_value(:exclusion_url).strip.split(/[ |\t|\r|\n|\f]+/) rescue exclusion = ''
     rank_table = Rank::Total.arel_table
-
+    
+    if !options.blank? && options[:exclusion_url].present?
+      exclusion = [] if exclusion.blank?
+      options[:exclusion_url].each do |url|
+        exclusion << url
+      end 
+    end
+    
     ranks = Rank::Total.select('*')
                        .select(rank_table[target].as('accesses'))
                        .where(content_id: content.id)
                        .where(term:       term)
                        .where(hostname:   hostname)
                        .where(rank_table[:page_path].not_in(exclusion))
+                       .where(rank_table[:page_path].does_not_match('/_preview/%'))
 
     category_ids = []
     if category_option == 'on'
@@ -186,6 +194,12 @@ module Rank::Controller::Rank
                                         .where(content_id:  content.id)
                                         .where(page_path:   rank_table[:page_path])
                                         .where(category_id: category_ids).exists)
+    end
+    
+    unless options.blank?
+      if options[:page_path].present?
+        ranks = ranks.where(rank_table[:page_path].matches("#{options[:page_path]}%"))
+      end
     end
 
     ranks = ranks.order('accesses DESC').paginate(page: params[:page], per_page: per_page)

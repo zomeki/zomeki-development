@@ -78,6 +78,7 @@ module DocHelper
       body: "#{doc.body}#{doc.body_more}".blank? ? '' : content_tag(:span, "#{file_path_expanded_body(doc)}#{doc.body_more}".html_safe, class: 'body'),
       user: doc.creator.user.try(:name).blank? ? '' : content_tag(:span, doc.creator.user.name, class: 'user'),
       comment_count: content_tag(:span, link_to(doc.comments.count, "#{doc.public_uri}#comments"), class: 'comment_count'),
+      doc_no: doc.serial_no.blank? ? '' : content_tag(:span, doc.serial_no, class: 'docNo'),
       }
 
     if Page.mobile?
@@ -104,6 +105,7 @@ module DocHelper
         '@body@' => contents[:body],
         '@user@' => contents[:user],
         '@comment_count@' => contents[:comment_count],
+        '@doc_no@' => contents[:doc_no],
       }).html_safe
     end
   end

@@ -2,6 +2,7 @@
 class GpArticle::Content::Doc < Cms::Content
   CALENDAR_RELATION_OPTIONS = [['使用する', 'enabled'], ['使用しない', 'disabled']]
   MAP_RELATION_OPTIONS = [['使用する', 'enabled'], ['使用しない', 'disabled']]
+  RANK_RELATION_OPTIONS = [['使用する', 'enabled'], ['使用しない', 'disabled']]
   APPROVAL_RELATION_OPTIONS = [['使用する', 'enabled'], ['使用しない', 'disabled']]
   INQUIRY_STATE_OPTIONS = [['表示', 'visible'], ['非表示', 'hidden']]
   INQUIRY_FIELD_OPTIONS = [['住所', 'address'], ['TEL', 'tel'], ['FAX', 'fax'], ['メールアドレス', 'email'], ['備考', 'note']] # ['課', 'group_id'], ['室・担当', 'charge'],
@@ -13,10 +14,14 @@ class GpArticle::Content::Doc < Cms::Content
   FEATURE_SETTINGS_OPTIONS = [['使用する', 'enabled'], ['使用しない', 'disabled']]
   WRAPPER_TAG_OPTIONS = [['li', 'li'], ['article', 'article']]
   DOC_LIST_STYLE_OPTIONS = [['日付毎', 'by_date'], ['記事一覧', 'simple']]
+  DOCS_ORDER_OPTIONS = [['公開日（降順）', 'published_at_desc'], ['公開日（昇順）', 'published_at_asc'], 
+                        ['更新日（降順）', 'updated_at_desc'], ['更新日（昇順）', 'updated_at_asc']]
   QRCODE_SETTINGS_OPTIONS = [['使用する', 'enabled'], ['使用しない', 'disabled']]
   QRCODE_STATE_OPTIONS = [['表示', 'visible'], ['非表示', 'hidden']]
   EVENT_SYNC_SETTINGS_OPTIONS = [['使用する', 'enabled'], ['使用しない', 'disabled']]
   EVENT_SYNC_DEFAULT_WILL_SYNC_OPTIONS = [['同期する', 'enabled'], ['同期しない', 'disabled']]
+  SERIALNO_SETTINGS_OPTIONS = [['使用する', 'enabled'], ['使用しない', 'disabled']]
+  RANKING_TERMS_OPTIONS_OPTIONS = [['前日', 'previous_days'], ['先週（月曜日〜日曜日）', 'last_weeks'], ['先月', 'last_months'], ['週間（前日から二週間）', 'this_weeks']]
 
   default_scope { where(model: 'GpArticle::Doc') }
 
@@ -46,6 +51,10 @@ class GpArticle::Content::Doc < Cms::Content
 
   def public_archives_node
     Cms::Node.where(state: 'public', content_id: id, model: 'GpArticle::Archive').order(:id).first
+  end
+
+  def public_search_docs_node
+    Cms::Node.where(state: 'public', content_id: id, model: 'GpArticle::SearchDoc').order(:id).first
   end
 
   def public_nodes
@@ -111,6 +120,10 @@ class GpArticle::Content::Doc < Cms::Content
     setting_value(:time_style).to_s
   end
 
+  def docs_order
+    setting_value(:docs_order).to_s
+  end
+
   def tag_related?
     setting_value(:tag_relation) == 'enabled'
   end
@@ -164,6 +177,22 @@ class GpArticle::Content::Doc < Cms::Content
   def map_related?
     setting_value(:map_relation) == 'enabled'
   end
+
+  def rank_related?
+    setting_value(:rank_relation) == 'enabled'
+  end
+
+  def rank_content_rank
+    Rank::Content::Rank.find_by_id(setting_extra_value(:rank_relation, :rank_content_id))
+  end
+  
+  def ranking_term
+    setting_extra_value(:rank_relation, :ranking_term).to_s
+  end
+
+  def ranking_display_count
+    (setting_extra_value(:rank_relation, :ranking_display_count).presence || 50).to_i
+  end  
 
   def inquiry_related?
     setting_value(:inquiry_setting) == 'enabled'
@@ -301,6 +330,14 @@ class GpArticle::Content::Doc < Cms::Content
   def event_sync_default_will_sync
     setting_extra_value(:calendar_relation, :event_sync_default_will_sync).to_s
   end
+  
+  def serial_no_enabled?
+    setting_value(:serial_no_settings).to_s == 'enabled'
+  end
+
+  def serial_no_title
+    setting_extra_value(:serial_no_settings, :title).to_s
+  end
 
   private
 
@@ -311,6 +348,7 @@ class GpArticle::Content::Doc < Cms::Content
     in_settings[:display_dates] = ['published_at'] unless setting_value(:display_dates)
     in_settings[:calendar_relation] = CALENDAR_RELATION_OPTIONS.first.last unless setting_value(:calendar_relation)
     in_settings[:map_relation] = MAP_RELATION_OPTIONS.first.last unless setting_value(:map_relation)
+    in_settings[:rank_relation] = RANK_RELATION_OPTIONS.first.last unless setting_value(:rank_relation)
     in_settings[:inquiry_setting] = 'enabled' unless setting_value(:inquiry_setting)
     in_settings[:approval_relation] = APPROVAL_RELATION_OPTIONS.first.last unless setting_value(:approval_relation)
     in_settings[:feed] = FEED_DISPLAY_OPTIONS.first.last unless setting_value(:feed)
@@ -320,5 +358,6 @@ class GpArticle::Content::Doc < Cms::Content
     in_settings[:broken_link_notification] = BROKEN_LINK_NOTIFICATION_OPTIONS.first.last unless setting_value(:broken_link_notification)
     in_settings[:feature_settings] = FEATURE_SETTINGS_OPTIONS.last.last unless setting_value(:feature_settings)
     in_settings[:doc_list_style] = DOC_LIST_STYLE_OPTIONS.first.last unless setting_value(:doc_list_style)
+    in_settings[:docs_order] = DOCS_ORDER_OPTIONS.first.last unless setting_value(:docs_order)
   end
 end
