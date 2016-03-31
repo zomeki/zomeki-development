@@ -14,8 +14,10 @@ class Sys::Admin::Groups::ExportController < Cms::Controller::Admin::Base
  
   def export
     if params[:do] == 'groups'
+      Sys::OperationLog.log(request, :item => Sys::Group.new, :action => 'export')
       export_groups
     elsif params[:do] == 'users'
+      Sys::OperationLog.log(request, :item => Sys::User.new, :action => 'export')
       export_users
     else
       return redirect_to(:action => :index)
