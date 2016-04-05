@@ -23,20 +23,9 @@ class Cms::Inquiry < ActiveRecord::Base
     group.id if group
   end
 
-  def tel
-    group.tel if group
-  end
 
   def tel_attend
     group.tel_attend if group
-  end
-
-  def fax
-    group.fax if group
-  end
-
-  def email
-    group.email if group
   end
 
   def note

@@ -13,11 +13,9 @@ return nil unless item.inquiry.visible?
   <tr>
     <th>課</th>
     <td><%= safe{item.inquiry.group.full_name} %></td>
-<% if false %>
   </tr><tr>
     <th>室・担当</th>
     <td><%= item.inquiry.charge %></td>
-<% end %>
   </tr><tr>
     <th>住所</th>
     <td><%= item.inquiry.address %></td>
