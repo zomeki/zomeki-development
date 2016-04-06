@@ -12,7 +12,9 @@ class Sys::Admin::OperationLogsController < Cms::Controller::Admin::Base
     @item = Sys::OperationLog.new
     
     @item_type_options = ["all", "article", "directory", "page", "piece"]
-    @action_type_options = [["作成","create"], ["更新","update"], ["承認","recognize"], ["削除","destroy"], ["公開","publish"], ["非公開","close"], ["ログイン","login"], ["ログアウト","logout"]]
+    @action_type_options = [["作成","create"], ["更新","update"], ["承認","recognize"], ["削除","destroy"], 
+                            ["公開","publish"], ["非公開","close"], ["インポート","import"], ["エクスポート","export"], 
+                            ["ログイン","login"], ["ログアウト","logout"]]
    
     item = Sys::OperationLog.new
     item.and :site_id, Core.site.id

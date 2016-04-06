@@ -21,9 +21,11 @@ class Sys::Admin::Groups::ImportController < Cms::Controller::Admin::Base
     csv = NKF.nkf('-w', params[:item][:file].read)
 
     if params[:do] == 'groups'
+      item = Sys::Group.new
       Core.messages << "インポート： グループ"
       import_groups(csv)
     elsif params[:do] == 'users'
+      item = Sys::User.new
       Core.messages << "インポート： ユーザ"
       import_users(csv)
     else
@@ -33,6 +35,8 @@ class Sys::Admin::Groups::ImportController < Cms::Controller::Admin::Base
     Core.messages << "-- 追加 #{@results[0]}件"
     Core.messages << "-- 更新 #{@results[1]}件"
     Core.messages << "-- 失敗 #{@results[2]}件"
+
+    Sys::OperationLog.log(request, :item => item, :action => 'import')
 
     flash[:notice] = "インポートが終了しました。<br />#{Core.messages.join('<br />')}".html_safe
     return redirect_to(:action => :index)
