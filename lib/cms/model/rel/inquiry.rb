@@ -34,7 +34,7 @@ module Cms::Model::Rel::Inquiry
     unless g = Core.user.group
       return params
     end
-    {:state => 'hidden', :group_id => g.id, :address => g.address, :tel => g.tel, :email => g.email, :note => g.note}.merge(params)
+    {:state => 'hidden', :group_id => g.id, :address => g.address, :tel => g.tel, :fax => g.fax, :email => g.email, :note => g.note}.merge(params)
   end
 
   def inquiry_presence?(name)
