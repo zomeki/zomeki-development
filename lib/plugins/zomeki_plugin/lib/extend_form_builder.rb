@@ -30,7 +30,7 @@ class ActionView::Helpers::FormBuilder
       post = true
       arr = @template.params[@object_name][pre]
     else
-      arr = @template.instance_variable_get("@#{@object_name}").send(pre)
+      arr = (@object || @template.instance_variable_get("@#{@object_name}")).try(pre)
     end
     return nil unless arr
     
