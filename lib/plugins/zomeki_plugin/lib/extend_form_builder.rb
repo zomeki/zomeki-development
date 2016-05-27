@@ -13,30 +13,36 @@ class ActionView::Helpers::FormBuilder
   end
 
   def array_value(method)
-    method = method.to_s
-
-    unless pos = method.index('[')
-      return @template.params[@object_name].try(:[], method) ||
-             (@object || @template.instance_variable_get("@#{@object_name}")).try(method)
+    unless pos = method.to_s.index('[')
+      if @template.params[@object_name] && @template.params[@object_name][method]
+        return @template.params[@object_name][method]
+      else
+        return (@object || @template.instance_variable_get("@#{@object_name}")).try(method)
+      end
     end
+    pos = pos.to_i
+    pre = pos == 0 ? method : method.slice(0, pos)
+    suf = pos == 0 ? "" : method.slice(pos, method.size)
 
-    first, second = if pos.zero?
-                      [method, '']
-                    else
-                      [method.slice(0, pos), method.slice(pos, method.size)]
-                    end
-
-    array = @template.params[@object_name].try(:[], first) ||
-            (@object || @template.instance_variable_get("@#{@object_name}")).try(first)
-
-    return array if array.nil?
-
-    value = second.scan(/(?<=\[).*?(?=\])/).inject(array) {|result, key|
-              next nil unless result.respond_to?(:[])
-              result[key =~ /^\d+$/ ? key.to_i : key.to_s]
-            }
-
-    value.respond_to?(:force_encoding) ? value.force_encoding(Encoding::UTF_8) : value
+    arr  = nil
+    post = nil
+    if @template.params[@object_name] && @template.params[@object_name][pre]
+      post = true
+      arr = @template.params[@object_name][pre]
+    else
+      arr = (@object || @template.instance_variable_get("@#{@object_name}")).try(pre)
+    end
+    return nil unless arr
+    
+    value  = nil
+    script = "value = arr"
+    suf.scan(/\[(.*?)\]/).each do |m|
+      script += (post == nil && m[0] =~ /^[0-9]+$/ ? "[#{m[0]}]" : "['#{m[0]}']")
+    end
+    eval("#{script} rescue nil")
+    value.force_encoding(Encoding::UTF_8) if value.respond_to?(:force_encoding)
+    
+    return value
   end
 
   def array_text_field(method, options = {})
