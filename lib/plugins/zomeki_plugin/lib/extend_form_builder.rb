@@ -17,7 +17,7 @@ class ActionView::Helpers::FormBuilder
       if @template.params[@object_name] && @template.params[@object_name][method]
         return @template.params[@object_name][method]
       else
-        return @template.instance_variable_get("@#{@object_name}").send(method)
+        return (@object || @template.instance_variable_get("@#{@object_name}")).try(method)
       end
     end
     pos = pos.to_i
