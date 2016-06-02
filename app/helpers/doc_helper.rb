@@ -17,7 +17,13 @@ module DocHelper
                 else
                   unless (img_tags = Nokogiri::HTML.parse(doc.body).css('img[src^="file_contents/"]')).empty?
                     filename = File.basename(img_tags.first.attributes['src'].value)
-                    alt = img_tags.first.attributes['alt'].value
+                    alt = if img_tags.first.attributes['alt']
+                            img_tags.first.attributes['alt'].value
+                          elsif img_tags.first.attributes['title']
+                            img_tags.first.attributes['title'].value
+                          else
+                            ''
+                          end
                     image_tag("#{doc.public_uri(without_filename: true)}file_contents/#{url_encode filename}", alt: alt)
                   else
                     ''
