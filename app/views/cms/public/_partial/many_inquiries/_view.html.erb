@@ -13,12 +13,12 @@ return if !item.inquiries.any?(&:visible?)
      %><div class="charge"><%= inquiry.charge %></div><% end %>
     <% if item.inquiry_display_field?(:address) && inquiry.address.present?
      %><div class="address"><span class="label">住所</span>：<%= inquiry.address %></div><% end %>
-    <% if item.inquiry_display_field?(:tel) && inquiry.tel.present?
-     %><div class="tel"><span class="label">TEL</span>：<%= inquiry.tel %><%= inquiry.tel_attend %></div><% end %>
-    <% if item.inquiry_display_field?(:fax) && inquiry.fax.present?
-     %><div class="fax"><span class="label">FAX</span>：<%= inquiry.fax %></div><% end %>
-    <% if item.inquiry_display_field?(:email) && inquiry.email.present?
-     %><div class="email"><span class="label">E-Mail</span>：<%= email_to inquiry.email %></div><% end %>
+    <% if item.inquiry_display_field?(:tel) && inquiry.group_tel.present?
+     %><div class="tel"><span class="label">TEL</span>：<%= inquiry.group_tel %><%= inquiry.tel_attend %></div><% end %>
+    <% if item.inquiry_display_field?(:fax) && inquiry.group_fax.present?
+     %><div class="fax"><span class="label">FAX</span>：<%= inquiry.group_fax %></div><% end %>
+    <% if item.inquiry_display_field?(:email) && inquiry.group_email.present?
+     %><div class="email"><span class="label">E-Mail</span>：<%= email_to inquiry.group_email %></div><% end %>
     <% if item.inquiry_display_field?(:note) && inquiry.note.present?
      %><div class="note"><span class="label">備考</span>：<%= inquiry.note %></div><% end %>
     </address>

@@ -21,20 +21,20 @@
     <%- if item.inquiry_display_field?(:tel) -%>
     <tr>
       <th>TEL</th>
-      <td><%= inquiry.tel %>
+      <td><%= inquiry.group_tel %>
           <%= inquiry.tel_attend %></td>
     </tr>
     <% end %>
     <%- if item.inquiry_display_field?(:fax) -%>
     <tr>
       <th>FAX</th>
-      <td><%= inquiry.fax %></td>
+      <td><%= inquiry.group_fax %></td>
     </tr>
     <% end %>
     <%- if item.inquiry_display_field?(:email) -%>
     <tr>
       <th>メールアドレス</th>
-      <td><%= inquiry.email %></td>
+      <td><%= inquiry.group_email %></td>
     </tr>
     <% end %>
     <%- if item.inquiry_display_field?(:note) -%>
