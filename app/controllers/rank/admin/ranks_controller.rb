@@ -9,9 +9,9 @@ class Rank::Admin::RanksController < Cms::Controller::Admin::Base
   end
 
   def index
-    @terms   = ranking_terms
+    @terms   = ranking_terms(@content)
     @targets = ranking_targets
-    @term    = param_check(@terms,   params[:term])
+    @term    = @terms.blank? ? '' : param_check(@terms,   params[:term])
     @target  = param_check(@targets, params[:target])
 
     options
