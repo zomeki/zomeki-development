@@ -27,7 +27,12 @@ class Rank::Admin::Content::SettingsController < Cms::Controller::Admin::Base
 
   def update
     @item = Rank::Content::Setting.config(@content, params[:id])
-    @item.value = params[:item][:value]
+    
+    if @item.name == 'ranking_terms'
+      @item.value = params[:item][:value].blank? ? [] : params[:item][:value].map {|ct| ct[0] }
+    else
+      @item.value = params[:item][:value]
+    end
 
     if @item.name.in?('google_oauth')
       extra_values = @item.extra_values

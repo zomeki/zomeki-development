@@ -4,4 +4,7 @@ class Rank::Content::Setting < Cms::ContentSetting
   set_config :show_count,      name: 'アクセス数の表示', options: [['表示する', 1], ['表示しない', 0]]
   set_config :exclusion_url,   name: '除外URL', lower_text: 'スペースまたは改行で複数指定できます。', form_type: :text
   set_config :google_oauth,    name: 'Google OAuth'
+  set_config :ranking_terms,   name: '使用する集計期間',
+    options: Rank::Content::Rank.ranking_terms,
+    form_type: :check_boxes
 end

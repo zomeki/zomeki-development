@@ -5,6 +5,10 @@ class Rank::Content::Rank < Cms::Content
   has_many :pieces, foreign_key: :content_id, class_name: 'Rank::Piece::Rank', dependent: :destroy
   has_many :ranks, foreign_key: :content_id, class_name: 'Rank::Total', dependent: :destroy
 
+  def self.ranking_terms
+    return [['すべて', 'all']] + Rank::Rank::TERMS
+  end
+
   def public_nodes
     nodes.public
   end
@@ -17,6 +21,11 @@ class Rank::Content::Rank < Cms::Content
   def rank_node
     return @rank_node if @rank_node
     @rank_node = Cms::Node.where(state: 'public', content_id: id, model: 'Rank::Rank').order(:id).first
+  end
+  
+  def use_ranking_terms
+    return [] if setting_value(:ranking_terms).blank?
+    YAML.load(setting_value(:ranking_terms))
   end
 
   def access_token
