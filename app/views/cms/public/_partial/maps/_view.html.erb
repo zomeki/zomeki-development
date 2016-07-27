@@ -29,7 +29,7 @@ addEvent(window, 'load', function() {
   
   <% markers.each_with_index do |marker, idx| %>
     var marker<%= idx %> = new google.maps.Marker({
-      //title: '<%= marker.name.gsub(/'/, "\\\\'") %>'
+      //title: '<%= marker.name %>'
       position: new google.maps.LatLng(<%= marker.lat %>, <%= marker.lng %>),
       map: map
     });
@@ -39,7 +39,7 @@ addEvent(window, 'load', function() {
     <%- end -%>
 
     var infowindow<%= idx %> = new google.maps.InfoWindow({
-      content: '<%= marker.name.gsub(/'/, "\\\\'").gsub(/\r\n|\r|\n/, "<br />") %>',
+      content: '<%= marker.name.gsub(/\r\n|\r|\n/, "<br />") %>',
       disableAutoPan: false
     });
     google.maps.event.addListener(marker<%= idx %>, 'click', function() {

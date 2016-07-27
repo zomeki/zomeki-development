@@ -61,7 +61,8 @@ module Rank::Controller::Rank
         Rank::Total.where(content_id: content.id).delete_all
 
         t = Date.today
-        ranking_terms.each do |termname, term|
+        terms = content.use_ranking_terms
+        terms.each do |term|
           case term
           when 'all'
             from = Date.new(2005, 1, 1)
@@ -209,8 +210,15 @@ module Rank::Controller::Rank
     return Rank::Rank::TARGETS
   end
 
-  def ranking_terms
-    return [['すべて', 'all']] + Rank::Rank::TERMS
+  def ranking_terms(content)
+    all_terms = [['すべて', 'all']] + Rank::Rank::TERMS
+    terms = []
+    
+    content.use_ranking_terms.each do |term|
+      all_terms.each {|at| terms << at if at[1] == term }
+    end
+    
+    return terms
   end
 
   def param_check(ary, str)
