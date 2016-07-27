@@ -29,7 +29,11 @@ class Rank::Admin::Content::SettingsController < Cms::Controller::Admin::Base
     @item = Rank::Content::Setting.config(@content, params[:id])
     
     if @item.name == 'ranking_terms'
-      @item.value = params[:item][:value].blank? ? [] : params[:item][:value].map {|ct| ct[0] }
+      @item.value = if params[:item][:value].blank?
+                      Rank::Content::Rank.default_ranking_terms
+                    else
+                      params[:item][:value].map {|ct| ct[0] }
+                    end
     else
       @item.value = params[:item][:value]
     end

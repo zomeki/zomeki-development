@@ -210,6 +210,17 @@ module Rank::Controller::Rank
     return Rank::Rank::TARGETS
   end
 
+  def ranking_terms(content)
+    all_terms = [['すべて', 'all']] + Rank::Rank::TERMS
+    terms = []
+    
+    content.use_ranking_terms.each do |term|
+      all_terms.each {|at| terms << at if at[1] == term }
+    end
+    
+    return terms
+  end
+
   def param_check(ary, str)
     str = ary.first[1] if str.blank? || !ary.flatten.include?(str)
     str
