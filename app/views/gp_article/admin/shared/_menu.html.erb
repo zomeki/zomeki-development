@@ -38,7 +38,7 @@ end
                                                                                                                @item.approvers.include?(Core.user) %>
   <%= link_to :publish, publish_gp_article_doc_path, :method => :post, :confirm => pubmsg if @item.state_approved? &&
                                                                                              @item.approval_participators.include?(Core.user) &&
-                                                                                             @item.content.doc_node %>
+                                                                                             @item.content.doc_preview_node %>
   <%= link_to :close, {:do => :close}, :confirm => '公開を終了してよろしいですか？' if @item.closable? %>
   <%- end -%>
 

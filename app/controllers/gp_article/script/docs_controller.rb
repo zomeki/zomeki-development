@@ -17,12 +17,7 @@ class GpArticle::Script::DocsController < Cms::Controller::Script::Publication
   def publish_by_task
     if (item = params[:item]).try(:state_approved?)
       Script.current
-      if item.content && item.content.doc_node
-        info_log "-- Publish: #{item.class}##{item.id}"
-      else
-        info_log "-- Publish Skipped: #{item.class}##{item.id} no public directory"
-        return render text: 'NG'
-      end
+      info_log "-- Publish: #{item.class}##{item.id}"
 
       uri = item.public_uri.to_s
       path = item.public_path.to_s
