@@ -24,7 +24,13 @@ class Survey::Public::Node::FormsController < Cms::Controller::Public::Base
   end
 
   def show
-    @form_answer = @form.form_answers.build(answered_url: "#{@content.site.full_uri.sub(/\/+$/, '')}#{@content.public_node.public_uri}#{@form.name}",
+    answered_url = case Core.mode
+      when 'preview'
+        @form.preview_uri
+      else
+        "#{@content.site.full_uri.sub(/\/+$/, '')}#{@content.public_node.public_uri}#{@form.name}"
+      end
+    @form_answer = @form.form_answers.build(answered_url: answered_url,
                                             answered_url_title: @form.title,
                                             remote_addr: request.remote_addr, user_agent: request.user_agent)
 
