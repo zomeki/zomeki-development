@@ -22,6 +22,7 @@ class GpArticle::Public::Node::DocsController < Cms::Controller::Public::Base
     end
 
     return http_error(404) unless @content
+    return http_error(404) if Core.mode != 'preview' && Page.current_node.state != 'public'
   end
 
   def index
@@ -40,14 +41,14 @@ class GpArticle::Public::Node::DocsController < Cms::Controller::Public::Base
       else
         @docs.order('display_published_at DESC, published_at DESC')
       end
-    
+
     order_type = if @content.docs_order =~ /^updated_at/
                     'updated'
                   else
                     'published'
                   end
-    
-    
+
+
     if params[:format].in?('rss', 'atom')
       if @content.feed_docs_period.present?
         if order_type == 'updated'
@@ -140,11 +141,11 @@ class GpArticle::Public::Node::DocsController < Cms::Controller::Public::Base
       end
     end
   end
-  
+
   def rank
     return http_error(404) unless @content.rank_related?
     return http_error(404) unless @rank_content = @content.rank_content_rank
-    
+
     case @content.ranking_term
     when 'previous_days'
       @term   = 'previous_days'
@@ -159,7 +160,7 @@ class GpArticle::Public::Node::DocsController < Cms::Controller::Public::Base
       @term   = 'this_weeks'
       @target = 'pageviews'
     end
-    
+
     @node_uri = Page.current_node.public_uri
     options = {:page_path => @node_uri,
               :exclusion_url => [@node_uri, "#{@node_uri}rank.html"]}
