@@ -138,7 +138,7 @@ class GpArticle::Doc < ActiveRecord::Base
       if criteria[:user].present? || criteria[:editor_user].present?
         users = Sys::User.arel_table
         inners << :user
-        
+
         edit_users = Sys::User.arel_table.alias("users_sys_editors")
         e_inners << :user
       end
@@ -271,8 +271,13 @@ class GpArticle::Doc < ActiveRecord::Base
     "#{content.public_path}/_smartphone#{public_uri}#{filename_base}.html"
   end
 
-  def public_uri(without_filename: false)
-    return '' unless node = content.public_node
+  def public_uri(without_filename: false, with_closed_preview: false)
+    node = if with_closed_preview
+             content.doc_preview_node
+           else
+             content.public_node
+           end
+    return '' unless node
     uri = if (organization_content = content.organization_content_group) &&
               organization_content.article_related? &&
               organization_content.related_article_content == content
@@ -298,12 +303,12 @@ class GpArticle::Doc < ActiveRecord::Base
   end
 
   def preview_uri(site: nil, mobile: false, without_filename: false, **params)
-    return nil unless public_uri(without_filename: true)
+    return nil unless public_uri(without_filename: true, with_closed_preview: true)
     site ||= ::Page.site
     params = params.map{|k, v| "#{k}=#{v}" }.join('&')
     filename = without_filename || filename_base == 'index' ? '' : "#{filename_base}.html"
 
-    path = "_preview/#{format('%08d', site.id)}#{mobile ? 'm' : ''}#{public_uri(without_filename: true)}preview/#{id}/#{filename}#{params.present? ? "?#{params}" : ''}"
+    path = "_preview/#{format('%08d', site.id)}#{mobile ? 'm' : ''}#{public_uri(without_filename: true, with_closed_preview: true)}preview/#{id}/#{filename}#{params.present? ? "?#{params}" : ''}"
     d = Cms::SiteSetting::AdminProtocol.core_domain site, site.full_uri, :freeze_protocol => true
     "#{d}#{path}"
   end
@@ -453,7 +458,7 @@ class GpArticle::Doc < ActiveRecord::Base
       groups << 'ALL' unless editable_group.all.blank?
       new_doc.in_editable_groups = groups
     end
-    
+
     inquiries.each_with_index do |inquiry, i|
       if i == 0
         attrs = inquiry.attributes
@@ -873,13 +878,11 @@ class GpArticle::Doc < ActiveRecord::Base
   end
 
   def node_existence
-    unless content.doc_node
-      case state
-      when 'public'
-        errors.add(:base, '記事コンテンツのディレクトリが作成されていないため、即時公開が行えません。')
-      when 'approvable'
-        errors.add(:base, '記事コンテンツのディレクトリが作成されていないため、承認依頼が行えません。')
-      end
+    case state
+    when 'public'
+      errors.add(:base, '記事コンテンツのディレクトリが作成されていないため、即時公開が行えません。') unless content.doc_node
+    when 'approvable'
+      errors.add(:base, '記事コンテンツのディレクトリが作成されていないため、承認依頼が行えません。') unless content.doc_preview_node
     end
   end
 
