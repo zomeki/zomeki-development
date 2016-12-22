@@ -20,8 +20,10 @@
       </tr>
       <tr>
         <th><%= @item.locale :public_full_uri %></th>
-        <td colspan="3"><%= link_to_if @item.public_full_uri(with_closed_preview: true).present?,
-                                       @item.public_full_uri(with_closed_preview: true), @item.public_full_uri, target: 'preview' %></td>
+        <td colspan="3">
+        <% public_full_uri = @item.public_full_uri(with_closed_preview: true) %>
+        <%= link_to_if public_full_uri.present?,
+                       public_full_uri, public_full_uri, target: 'preview' %></td>
       </tr>
       <%- if @item.template -%>
       <tr>
