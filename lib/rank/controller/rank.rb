@@ -166,6 +166,13 @@ module Rank::Controller::Rank
                        .where(rank_table[:page_path].not_in(exclusion))
                        .where(rank_table[:page_path].does_not_match('/_preview/%'))
 
+
+    if !options.blank? && options[:not_match_url].present?
+      options[:not_match_url].each do |url|
+        ranks = ranks.where(rank_table[:page_path].does_not_match(url))
+      end 
+    end
+
     category_ids = []
     if category_option == 'on'
       item = current_item || Page.current_item
@@ -174,6 +181,15 @@ module Rank::Controller::Rank
           category_ids = item.categories.map(&:id)
         when GpCategory::Category
           category_ids = item.descendants.map(&:id)
+        when Cms::Node
+          if item.model == "GpCategory::CategoryType"
+            cate_content = GpCategory::Content::CategoryType.find_by_id(item.content_id)
+            cate_content.public_category_types.each do |type|
+              category_ids.concat(type.categories.map(&:id))
+            end
+          else
+            category_ids = []
+          end
       end
     end
 
