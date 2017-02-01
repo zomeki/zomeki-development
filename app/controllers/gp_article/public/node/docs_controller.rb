@@ -163,7 +163,8 @@ class GpArticle::Public::Node::DocsController < Cms::Controller::Public::Base
 
     @node_uri = Page.current_node.public_uri
     options = {:page_path => @node_uri,
-              :exclusion_url => [@node_uri, "#{@node_uri}rank.html"]}
+              :exclusion_url => [@node_uri, "#{@node_uri}rank.html"],
+              :not_match_url => ["#{@node_uri}index.%"]}
     @ranks  = rank_datas(@rank_content, @term, @target, @content.ranking_display_count, nil, nil, nil, nil, nil, options)
   end
 
