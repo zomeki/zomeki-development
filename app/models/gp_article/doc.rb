@@ -816,18 +816,11 @@ class GpArticle::Doc < ActiveRecord::Base
   private
 
   def name_validity
-    if prev_edition
-      self.name = prev_edition.name
-      return
-    end
-
     errors.add(:name, :invalid) if self.name && self.name !~ /^[\-\w]*$/
 
-    if (doc = self.class.where(name: self.name, state: self.state, content_id: self.content.id).first)
-      unless doc.id == self.id || state_archived?
-        errors.add(:name, :taken) unless state_public? && prev_edition.try(:state_public?)
-      end
-    end
+    doc = self.class.where(content_id: content_id, name: name)
+    doc = doc.where(self.class.arel_table[:serial_no].not_eq(serial_no)) if serial_no
+    errors.add(:name, :taken) if doc.exists?
   end
 
   def set_name
