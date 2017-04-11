@@ -735,7 +735,7 @@ class GpArticle::Doc < ActiveRecord::Base
   end
 
   def will_replace?
-    prev_edition && (state_draft? || state_approvable? || state_approved?)
+    prev_edition && !prev_edition.state_archived? && (state_draft? || state_approvable? || state_approved?)
   end
 
   def will_be_replaced?
