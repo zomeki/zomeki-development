@@ -5,7 +5,7 @@ class Organization::Script::GroupsController < Cms::Controller::Script::Publicat
     smart_phone_path = @node.public_smart_phone_path.to_s
     publish_more(@node, uri: uri, path: path, smart_phone_path: smart_phone_path, dependent: uri)
 
-    @node.content.groups.each do |group|
+    @node.content.groups.where(state: 'public').each do |group|
       g_uri = group.public_uri
       g_path = group.public_path
       g_smart_phone_path = group.public_smart_phone_path

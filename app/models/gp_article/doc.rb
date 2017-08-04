@@ -138,7 +138,7 @@ class GpArticle::Doc < ActiveRecord::Base
       if criteria[:user].present? || criteria[:editor_user].present?
         users = Sys::User.arel_table
         inners << :user
-        
+
         edit_users = Sys::User.arel_table.alias("users_sys_editors")
         e_inners << :user
       end
@@ -271,8 +271,13 @@ class GpArticle::Doc < ActiveRecord::Base
     "#{content.public_path}/_smartphone#{public_uri}#{filename_base}.html"
   end
 
-  def public_uri(without_filename: false)
-    return '' unless node = content.public_node
+  def public_uri(without_filename: false, with_closed_preview: false)
+    node = if with_closed_preview
+             content.doc_preview_node
+           else
+             content.public_node
+           end
+    return '' unless node
     uri = if (organization_content = content.organization_content_group) &&
               organization_content.article_related? &&
               organization_content.related_article_content == content
@@ -284,8 +289,13 @@ class GpArticle::Doc < ActiveRecord::Base
     without_filename || filename_base == 'index' ? uri : "#{uri}#{filename_base}.html"
   end
 
-  def public_full_uri(without_filename: false)
-    return '' unless node = content.public_node
+  def public_full_uri(without_filename: false, with_closed_preview: false)
+    node = if with_closed_preview
+             content.doc_preview_node
+           else
+             content.public_node
+           end
+    return '' unless node
     uri = if (organization_content = content.organization_content_group) &&
             organization_content.article_related? &&
             organization_content.related_article_content == content
@@ -298,12 +308,12 @@ class GpArticle::Doc < ActiveRecord::Base
   end
 
   def preview_uri(site: nil, mobile: false, without_filename: false, **params)
-    return nil unless public_uri(without_filename: true)
+    return nil unless public_uri(without_filename: true, with_closed_preview: true)
     site ||= ::Page.site
     params = params.map{|k, v| "#{k}=#{v}" }.join('&')
     filename = without_filename || filename_base == 'index' ? '' : "#{filename_base}.html"
 
-    path = "_preview/#{format('%08d', site.id)}#{mobile ? 'm' : ''}#{public_uri(without_filename: true)}preview/#{id}/#{filename}#{params.present? ? "?#{params}" : ''}"
+    path = "_preview/#{format('%08d', site.id)}#{mobile ? 'm' : ''}#{public_uri(without_filename: true, with_closed_preview: true)}preview/#{id}/#{filename}#{params.present? ? "?#{params}" : ''}"
     d = Cms::SiteSetting::AdminProtocol.core_domain site, site.full_uri, :freeze_protocol => true
     "#{d}#{path}"
   end
@@ -453,7 +463,7 @@ class GpArticle::Doc < ActiveRecord::Base
       groups << 'ALL' unless editable_group.all.blank?
       new_doc.in_editable_groups = groups
     end
-    
+
     inquiries.each_with_index do |inquiry, i|
       if i == 0
         attrs = inquiry.attributes
@@ -725,7 +735,7 @@ class GpArticle::Doc < ActiveRecord::Base
   end
 
   def will_replace?
-    prev_edition && (state_draft? || state_approvable? || state_approved?)
+    prev_edition && !prev_edition.state_archived? && (state_draft? || state_approvable? || state_approved?)
   end
 
   def will_be_replaced?
@@ -806,18 +816,11 @@ class GpArticle::Doc < ActiveRecord::Base
   private
 
   def name_validity
-    if prev_edition
-      self.name = prev_edition.name
-      return
-    end
-
     errors.add(:name, :invalid) if self.name && self.name !~ /^[\-\w]*$/
 
-    if (doc = self.class.where(name: self.name, state: self.state, content_id: self.content.id).first)
-      unless doc.id == self.id || state_archived?
-        errors.add(:name, :taken) unless state_public? && prev_edition.try(:state_public?)
-      end
-    end
+    doc = self.class.where(content_id: content_id, name: name)
+    doc = doc.where(self.class.arel_table[:serial_no].not_eq(serial_no)) if serial_no
+    errors.add(:name, :taken) if doc.exists?
   end
 
   def set_name
@@ -873,7 +876,7 @@ class GpArticle::Doc < ActiveRecord::Base
   end
 
   def node_existence
-    unless content.doc_node
+    unless content.doc_preview_node
       case state
       when 'public'
         errors.add(:base, '記事コンテンツのディレクトリが作成されていないため、即時公開が行えません。')

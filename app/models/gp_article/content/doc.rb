@@ -14,7 +14,7 @@ class GpArticle::Content::Doc < Cms::Content
   FEATURE_SETTINGS_OPTIONS = [['使用する', 'enabled'], ['使用しない', 'disabled']]
   WRAPPER_TAG_OPTIONS = [['li', 'li'], ['article', 'article']]
   DOC_LIST_STYLE_OPTIONS = [['日付毎', 'by_date'], ['記事一覧', 'simple']]
-  DOCS_ORDER_OPTIONS = [['公開日（降順）', 'published_at_desc'], ['公開日（昇順）', 'published_at_asc'], 
+  DOCS_ORDER_OPTIONS = [['公開日（降順）', 'published_at_desc'], ['公開日（昇順）', 'published_at_asc'],
                         ['更新日（降順）', 'updated_at_desc'], ['更新日（昇順）', 'updated_at_asc']]
   QRCODE_SETTINGS_OPTIONS = [['使用する', 'enabled'], ['使用しない', 'disabled']]
   QRCODE_STATE_OPTIONS = [['表示', 'visible'], ['非表示', 'hidden']]
@@ -59,6 +59,10 @@ class GpArticle::Content::Doc < Cms::Content
 
   def public_nodes
     Cms::Node.public.where(content_id: id)
+  end
+
+  def doc_preview_node
+    nodes.where(model: 'GpArticle::Doc').first
   end
 
 #TODO: DEPRECATED
@@ -185,14 +189,14 @@ class GpArticle::Content::Doc < Cms::Content
   def rank_content_rank
     Rank::Content::Rank.find_by_id(setting_extra_value(:rank_relation, :rank_content_id))
   end
-  
+
   def ranking_term
     setting_extra_value(:rank_relation, :ranking_term).to_s
   end
 
   def ranking_display_count
     (setting_extra_value(:rank_relation, :ranking_display_count).presence || 50).to_i
-  end  
+  end
 
   def inquiry_related?
     setting_value(:inquiry_setting) == 'enabled'
@@ -330,7 +334,7 @@ class GpArticle::Content::Doc < Cms::Content
   def event_sync_default_will_sync
     setting_extra_value(:calendar_relation, :event_sync_default_will_sync).to_s
   end
-  
+
   def serial_no_enabled?
     setting_value(:serial_no_settings).to_s == 'enabled'
   end

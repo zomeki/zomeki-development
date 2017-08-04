@@ -210,7 +210,6 @@ class GpCategory::Public::Node::CategoriesController < GpCategory::Public::Node:
       @term   = 'this_weeks'
       @target = 'pageviews'
     end
-    @term = 'all'
     
     @node_uri = Page.current_node.public_uri
     options = {:page_path => @node_uri,

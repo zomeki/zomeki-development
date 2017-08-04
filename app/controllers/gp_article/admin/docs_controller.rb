@@ -96,6 +96,9 @@ class GpArticle::Admin::DocsController < Cms::Controller::Admin::Base
 
     docs = GpArticle::Doc.arel_table
     @items = GpArticle::Doc.all_with_content_and_criteria(@content, criteria).order(docs[:updated_at].desc)
+
+    return export(@items) if params[:export_csv]
+
     @items = @items.paginate(page: params[:page], per_page: 30, total_entries: @items.count)
 
     _index @items
@@ -334,6 +337,36 @@ class GpArticle::Admin::DocsController < Cms::Controller::Admin::Base
     else
       redirect_to gp_article_doc_url(@content, @item), notice: '引き戻しに失敗しました。'
     end
+  end
+  
+  def export(docs)
+    require 'nkf'
+    require 'csv'
+    csv = CSV.generate do |c|
+      c << ["記事番号","ディレクトリ名","タイトル","内容","カテゴリ","関連記事",
+        "所属","作成者/更新者","更新日時","状態"]
+      docs.each do |doc|
+        row = []
+        row << doc.serial_no
+        row << doc.name
+        row << doc.title
+        row << doc.body
+        row << "#{doc.categories.map(&:title).join("\n")}"
+        row << "#{doc.rel_docs.map{|rd| "#{rd.title}（#{rd.serial_no}）"}.join("\n")}"
+        if doc.last_editor
+          row << doc.last_editor.try(:group).try(:name)
+          row << doc.last_editor.try(:user).try(:name)
+        else
+          row << doc.creator.group.try(:name)
+          row << doc.creator.user.try(:name)
+        end
+        row << doc.updated_at
+        row << doc.status.name
+        c << row
+      end
+    end
+    csv = NKF.nkf('-Ws -Lw', csv)
+    send_data(csv, :type => 'text/csv; charset=Shift_JIS', :filename => "gp_article_docs_#{Time.now.to_i}.csv")
   end
 
   protected

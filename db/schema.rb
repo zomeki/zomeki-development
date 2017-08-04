@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20150703080759) do
+ActiveRecord::Schema.define(:version => 20160427125546) do
 
   create_table "ad_banner_banners", :force => true do |t|
     t.string   "name"
@@ -683,6 +683,7 @@ ActiveRecord::Schema.define(:version => 20150703080759) do
     t.string   "og_image"
     t.string   "smart_phone_publication"
     t.string   "spp_target"
+    t.string   "google_map_api_key"
   end
 
   create_table "cms_talk_tasks", :force => true do |t|
@@ -856,6 +857,7 @@ ActiveRecord::Schema.define(:version => 20150703080759) do
     t.integer  "layout_id"
     t.text     "qrcode_state"
     t.string   "event_will_sync"
+    t.integer  "serial_no"
   end
 
   add_index "gp_article_docs", ["concept_id"], :name => "index_gp_article_docs_on_concept_id"
@@ -1578,7 +1580,10 @@ ActiveRecord::Schema.define(:version => 20150703080759) do
     t.datetime "updated_at",  :null => false
     t.integer  "user_id"
     t.integer  "group_id"
+    t.integer  "last_is"
   end
+
+  add_index "sys_editors", ["parent_unid", "last_is"], :name => "index_sys_editors_on_last_is"
 
   create_table "sys_files", :force => true do |t|
     t.integer  "unid"

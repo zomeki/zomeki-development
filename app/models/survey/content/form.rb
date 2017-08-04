@@ -22,6 +22,10 @@ class Survey::Content::Form < Cms::Content
     public_nodes.first
   end
 
+  def form_node
+    nodes.where(model: 'Survey::Form').first
+  end
+
   def mail_from
     setting_value(:mail_from).to_s
   end
