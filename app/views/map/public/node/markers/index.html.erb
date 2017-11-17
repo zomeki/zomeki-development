@@ -27,10 +27,10 @@
 
                      result
                    } -%>
-    map = new Map('map_canvas', <%= bounds[:min][:lat] %>, <%= bounds[:min][:lon] %>,
-                                <%= bounds[:max][:lat] %>, <%= bounds[:max][:lon] %>);
+    map = new MapViewer('map_canvas', <%= bounds[:min][:lat] %>, <%= bounds[:min][:lon] %>,
+                                      <%= bounds[:max][:lat] %>, <%= bounds[:max][:lon] %>);
     <%- else -%>
-    map = new Map('map_canvas', default_latitude, default_longitude);
+    map = new MapViewer('map_canvas', default_latitude, default_longitude);
     <%- end -%>
 
     <%- @all_markers.each do |marker| -%>
