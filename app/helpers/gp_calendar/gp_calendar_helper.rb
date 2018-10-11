@@ -21,7 +21,8 @@ module GpCalendar::GpCalendarHelper
     unless (doc = event.doc)
       count = (count > 0 ? count : event.files.size)
       return event.files[0...count].map{|f|
-        image_tag("#{f.parent.content.public_node.public_uri}#{f.parent.name}/file_contents/#{url_encode f.name}")
+        node = f.parent.content.public_nodes.where(model: 'GpCalendar::Event').first
+        return node.blank? ? '' : image_tag("#{node.public_uri}#{f.parent.name}/file_contents/#{url_encode f.name}")
       }.join.html_safe
     end
 
